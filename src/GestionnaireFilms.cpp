@@ -23,7 +23,7 @@ GestionnaireFilms::GestionnaireFilms(const GestionnaireFilms& other)
     for (const auto& film : other.films_)
     {
         // TODO: Uncomment une fois que la fonction ajouterFilm est écrite
-        //ajouterFilm(*film);
+        ajouterFilm(*film);
     }
 }
 
@@ -46,19 +46,18 @@ GestionnaireFilms& GestionnaireFilms::operator=(GestionnaireFilms other)
 std::ostream& operator<<(std::ostream& outputStream, const GestionnaireFilms& gestionnaireFilms)
 {
     // TODO: Uncomment une fois que la fonction getNombreFilms est écrite
-    outputStream << "Le gestionnaire de films contient " // << gestionnaireFilms.getNombreFilms() << " films.\n"
+    outputStream << "Le gestionnaire de films contient "  << gestionnaireFilms.getNombreFilms() << " films.\n"
                  << "Affichage par catégories:\n";
 
     // TODO: Réécrire l'implémentation avec des range-based for et structured bindings (voir énoncé du TP)
-    for (auto it = gestionnaireFilms.filtreGenreFilms_.cbegin(); it != gestionnaireFilms.filtreGenreFilms_.cend();
-            ++it)
+    for (const auto& [key,value] : gestionnaireFilms.filtreGenreFilms_)
     {
-        Film::Genre genre = it->first;
-        std::vector<const Film*> listeFilms = it->second;
-        outputStream << "Genre: " << getGenreString(genre) << " (" << listeFilms.size() << " films):\n";
-        for (std::size_t i = 0; i < listeFilms.size(); i++)
+		std::vector<const Film*> listeFilms = value;
+        outputStream << "Genre: " << getGenreString(key) << " (" << listeFilms.size() << " films):\n";
+
+        for (auto& i : listeFilms)
         {
-            outputStream << '\t' << *listeFilms[i] << '\n';
+            outputStream << '\t' << *i << '\n';
         }
     }
     return outputStream;
@@ -93,7 +92,7 @@ bool GestionnaireFilms::chargerDepuisFichier(const std::string& nomFichier)
             if (stream >> std::quoted(nom) >> genre >> pays >> std::quoted(realisateur) >> annee)
             {
                 // TODO: Uncomment une fois que la fonction ajouterFilm est écrite
-                // ajouterFilm(Film{nom, static_cast<Film::Genre>(genre), static_cast<Pays>(pays), realisateur, annee});
+                 ajouterFilm(Film{nom, static_cast<Film::Genre>(genre), static_cast<Pays>(pays), realisateur, annee});
             }
             else
             {
@@ -106,4 +105,80 @@ bool GestionnaireFilms::chargerDepuisFichier(const std::string& nomFichier)
     }
     std::cerr << "Erreur GestionnaireFilms: le fichier " << nomFichier << " n'a pas pu être ouvert\n";
     return false;
+}
+
+bool GestionnaireFilms::ajouterFilm(const Film& film)
+{
+	films_.push_back(std::make_unique<Film>(film));
+	if (getFilmParNom(film.nom))
+		return false;
+	Film* ptr = films_[films_.size() - 1].get();
+	filtreGenreFilms_[film.genre].push_back(ptr);
+	filtrePaysFilms_[film.pays].push_back(ptr);
+	return filtreNomFilms_.emplace(film.nom, ptr).second;
+
+
+}
+
+bool GestionnaireFilms::supprimerFilm(const std::string& nomFilm)
+{
+	auto existe = [nomFilm](std::unique_ptr<Film>& ptr)->bool { return (ptr->nom == nomFilm); };
+	auto it = std::find_if(films_.begin(), films_.end(), existe);
+	if (it != films_.end()) {
+		filtreNomFilms_.erase(nomFilm);
+
+		std::unique_ptr<Film>& ptr = *it;
+		Film::Genre genre = (*it)->genre;
+		Pays pays =(*it)->pays;
+
+		std::vector<const Film*>& filmsDuGenre = filtreGenreFilms_[genre];
+		std::vector<const Film*>& filmsDuPays = filtrePaysFilms_[pays];
+
+		filmsDuGenre.erase(std::remove(filmsDuGenre.begin(), filmsDuGenre.end(), ptr.get()), filmsDuGenre.end());
+		filmsDuPays.erase(std::remove(filmsDuPays.begin(), filmsDuPays.end(), ptr.get()), filmsDuPays.end());
+		films_.erase(it);
+		return true;
+	}
+	return false;
+}
+
+
+std::size_t GestionnaireFilms::getNombreFilms() const
+{
+	return films_.size();
+}
+
+const Film* GestionnaireFilms::getFilmParNom(const std::string& nom) const
+{
+	if (filtreNomFilms_.find(nom) != filtreNomFilms_.end())
+	return filtreNomFilms_.find(nom)->second;
+	return nullptr;
+	
+
+}
+
+std::vector<const Film*> GestionnaireFilms::getFilmsParGenre(Film::Genre genre) const
+{
+	std::vector<const Film*> vect;
+	if (filtreGenreFilms_.find(genre) != filtreGenreFilms_.end())
+		return filtreGenreFilms_.find(genre)->second;
+	return vect;
+	
+
+}
+
+std::vector<const Film*> GestionnaireFilms::getFilmsParPays(Pays pays) const
+{
+	std::vector<const Film*> vect;
+	if (filtrePaysFilms_.find(pays) != filtrePaysFilms_.end())
+		return filtrePaysFilms_.find(pays)->second;
+	return vect;
+
+}
+
+std::vector<const Film*> GestionnaireFilms::getFilmsEntreAnnees(int anneeDebut, int anneeFin)
+{
+	std::vector<const Film*> vect;
+	std::copy_if(films_.begin(), films_.end(), RawPointerBackInserter(vect), EstDansIntervalleDatesFilm(anneeDebut, anneeFin));
+	return vect;
 }
