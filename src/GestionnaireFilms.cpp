@@ -109,9 +109,10 @@ bool GestionnaireFilms::chargerDepuisFichier(const std::string& nomFichier)
 
 bool GestionnaireFilms::ajouterFilm(const Film& film)
 {
-	films_.push_back(std::make_unique<Film>(film));
+	
 	if (getFilmParNom(film.nom))
 		return false;
+	films_.push_back(std::make_unique<Film>(film));
 	Film* ptr = films_[films_.size() - 1].get();
 	filtreGenreFilms_[film.genre].push_back(ptr);
 	filtrePaysFilms_[film.pays].push_back(ptr);
