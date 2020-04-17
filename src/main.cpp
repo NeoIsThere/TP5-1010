@@ -1,6 +1,7 @@
 /// Fonction main.
-/// \author Misha Krieger-Raynauld
-/// \date 2020-01-12
+/// \author Misha Krieger-Raynauld, Samuel Lavallée et Anthelme Clisson 
+/// \date 2020-04 -17
+
 
 #include <iostream>
 #include "AnalyseurLogs.h"

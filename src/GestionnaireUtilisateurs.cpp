@@ -1,6 +1,7 @@
 /// Gestionnaire d'utilisateurs.
-/// \author Misha Krieger-Raynauld
-/// \date 2020-01-12
+/// \author Misha Krieger-Raynauld, Samuel Lavallée et Anthelme Clisson 
+/// \date 2020-04 -17
+
 
 #include "GestionnaireUtilisateurs.h"
 #include <fstream>
@@ -66,6 +67,9 @@ bool GestionnaireUtilisateurs::chargerDepuisFichier(const std::string& nomFichie
     return false;
 }
 
+/// Ajoute un utilisateur passé en paramètre
+/// \param Utilisateur          l'utilisateur à ajouter
+/// \return                     bool ajouté ou non
 bool GestionnaireUtilisateurs::ajouterUtilisateur(const Utilisateur& utilisateur)
 {
 
@@ -74,16 +78,24 @@ bool GestionnaireUtilisateurs::ajouterUtilisateur(const Utilisateur& utilisateur
 	
 }
 
+/// Supprime l'utilisateur dont l'id est passé en paramètre
+/// \param idUitlisateur	   string de l'id de l'utilisateur
+/// \return                    bool supprimé ou non
 bool GestionnaireUtilisateurs::supprimerUtilisateur(const std::string& idUtilisateur)
 {
 	return utilisateurs_.erase(idUtilisateur);
 }
 
+/// Retourne le nombre d'utilisteur
+/// \return     nombre d'utilisateurs
 std::size_t GestionnaireUtilisateurs::getNombreUtilisateurs() const
 {
 	return utilisateurs_.size();
 }
 
+/// Retourne un pointeur vers l'utilisateur dont l'id est passé en paramètre
+/// \param id	         id de l'utilisateur
+/// \return              un pointeur vers l'utilisateur
 const Utilisateur* GestionnaireUtilisateurs::getUtilisateurParId(const std::string& id) const
 {
 	if (utilisateurs_.find(id) == utilisateurs_.end())

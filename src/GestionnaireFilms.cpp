@@ -1,6 +1,7 @@
 /// Gestionnaire de films.
-/// \author Misha Krieger-Raynauld
-/// \date 2020-01-12
+/// \author Misha Krieger-Raynauld, Samuel Lavallée et Anthelme Clisson 
+/// \date 2020-04 -17
+
 
 #include "GestionnaireFilms.h"
 #include <algorithm>
@@ -107,6 +108,10 @@ bool GestionnaireFilms::chargerDepuisFichier(const std::string& nomFichier)
     return false;
 }
 
+/// Affiche les informations des films gérés par le gestionnaire de films à la sortie du stream donné.
+/// \param outputStream         Le stream auquel écrire les informations des films.
+/// \param gestionnaireFilms    Le gestionnaire de films à afficher au stream.
+/// \return                     Une référence au stream.
 bool GestionnaireFilms::ajouterFilm(const Film& film)
 {
 	
@@ -121,6 +126,9 @@ bool GestionnaireFilms::ajouterFilm(const Film& film)
 
 }
 
+/// Supprimer film dont le nom est passé en paramètre.
+/// \param nomFilm		        nom du film
+/// \return                     bool effacé ou pas trouvé
 bool GestionnaireFilms::supprimerFilm(const std::string& nomFilm)
 {
 	auto existe = [nomFilm](std::unique_ptr<Film>& ptr)->bool { return (ptr->nom == nomFilm); };
@@ -143,12 +151,16 @@ bool GestionnaireFilms::supprimerFilm(const std::string& nomFilm)
 	return false;
 }
 
-
+/// Retourne nombre de films du gestionnnaire
+/// \return                     le nb de films
 std::size_t GestionnaireFilms::getNombreFilms() const
 {
 	return films_.size();
 }
 
+/// Retourne un pointeur vers le film dont le nom est passé en paramètre
+/// \param nom	        nom du film
+/// \return             un pointeur vers le film
 const Film* GestionnaireFilms::getFilmParNom(const std::string& nom) const
 {
 	if (filtreNomFilms_.find(nom) != filtreNomFilms_.end())
@@ -158,6 +170,9 @@ const Film* GestionnaireFilms::getFilmParNom(const std::string& nom) const
 
 }
 
+/// Retourne les films par genre
+/// \param Genre	            genre recherché
+/// \return                     vector contenant tous les films de ce genre
 std::vector<const Film*> GestionnaireFilms::getFilmsParGenre(Film::Genre genre) const
 {
 	std::vector<const Film*> vect;
@@ -168,6 +183,9 @@ std::vector<const Film*> GestionnaireFilms::getFilmsParGenre(Film::Genre genre) 
 
 }
 
+/// Retourne les films par pays
+/// \param Genre	            pays recherché
+/// \return                     vector contenant tous les films de ce pays
 std::vector<const Film*> GestionnaireFilms::getFilmsParPays(Pays pays) const
 {
 	std::vector<const Film*> vect;
@@ -176,7 +194,9 @@ std::vector<const Film*> GestionnaireFilms::getFilmsParPays(Pays pays) const
 	return vect;
 
 }
-
+/// Retourne les films par année
+/// \param Genre	            année recherchée
+/// \return                     vector contenant tous les films de ces années
 std::vector<const Film*> GestionnaireFilms::getFilmsEntreAnnees(int anneeDebut, int anneeFin)
 {
 	std::vector<const Film*> vect;

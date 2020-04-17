@@ -1,6 +1,7 @@
 /// Tests automatisés.
-/// \author Misha Krieger-Raynauld
-/// \date 2020-03-04
+/// \author Misha Krieger-Raynauld, Samuel Lavallée et Anthelme Clisson 
+/// \date 2020-04 -17
+
 
 #include "Tests.h"
 #include <algorithm>
